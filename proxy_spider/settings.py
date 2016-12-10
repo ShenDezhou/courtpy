@@ -83,7 +83,7 @@ COOKIES_ENABLED = False
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    'proxy_spider.middlewares.DebugWenshuSpiderMiddleware': 543,
+    # 'proxy_spider.middlewares.DebugWenshuSpiderMiddleware': 543,
 }
 
 # Enable or disable downloader middlewares

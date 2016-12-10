@@ -9,6 +9,7 @@ from db.mredis import Redis
 from settings import REDIS_PROXY
 from scrapy.mail import MailSender
 import json
+import datetime
 
 class DebugWenshuSpiderMiddleware(object):
     def process_spider_input(self,response, spider):
@@ -36,7 +37,7 @@ class ProxyMiddleware(object):
         self.proxylist = list()
         for item in ProxyItemsTmpDB.get_proxy_items():  
             self.proxylist.append(item)
-        print self.proxylist
+        
 
     def process_request(self, request, spider):
         if not Redis.get(REDIS_PROXY):
@@ -47,7 +48,6 @@ class ProxyMiddleware(object):
                     proxy = self.proxylist[0]
                 else:
                     proxy = random.choice(self.proxylist)
-                proxy.pop("_id", None)
                 Redis.psetex(REDIS_PROXY,1000*3600,json.dumps(proxy))
 
         proxy = Redis.get(REDIS_PROXY)
@@ -55,11 +55,13 @@ class ProxyMiddleware(object):
             proxy = json.loads(proxy)
             http_proxy = "http://%s:%s" % (proxy["ip"], proxy["port"])
             request.meta['proxy'] = http_proxy
-            print http_proxy
-        # else:
-        #     #没有代理暂时啥也不做，可以发邮件
-        #     raise IgnoreRequest()
-    
+        
+    def process_response(self, request, response, spider):
+        if response.status == 200:
+            proxy = Redis.get(REDIS_PROXY)
+            proxy['time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            ProxyItemsTmpDB.upsert_proxy_item(dict(item))
+
     def process_exception(self, request, exception, spider):
         proxy = Redis.get(REDIS_PROXY)
         if proxy:

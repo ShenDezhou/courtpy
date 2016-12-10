@@ -10,8 +10,10 @@ MONGO_PROXY_DB = "proxy"
 mongo_client = pymongo.MongoClient(MONGO_URI)
 proxy_db = mongo_client[MONGO_PROXY_DB]
 
-GOOD_PROXY_CONDITION = { 'time' :{'$gt' :'%s'%time.strftime('%Y-%m-%d %H:00:00', time.localtime(time.time()-4*3600)),
-    '$lt' :'%s'%time.strftime('%Y-%m-%d %H:59:59', time.localtime(time.time()))}, 'type':'HTTP'}  
+def get_mongo_find_dict(hours_ago = 4):
+    GOOD_PROXY_CONDITION = { 'time' :{'$gt' :'%s'%time.strftime('%Y-%m-%d %H:00:00', time.localtime(time.time()-hours_ago*3600)),
+        '$lt' :'%s'%time.strftime('%Y-%m-%d %H:59:59', time.localtime(time.time()))}, 'type':'HTTP'}, {'_id': 0}  
+    return GOOD_PROXY_CONDITION
 
 class ProxyItemsDB(object):
     def __init__(self):
@@ -53,8 +55,12 @@ class ProxyItemsTmpDB(object):
 
     @staticmethod
     def get_proxy_items():
-        return proxy_db.proxy_items_tmp.find(GOOD_PROXY_CONDITION).batch_size(50)
-
+        hour_interval = [1,2,4,8,12,24,36,48,65535]
+        for i in hour_interval:
+            if proxy_db.proxy_items_tmp.count(get_mongo_find_dict(i)):
+                return proxy_db.proxy_items_tmp.find(get_mongo_find_dict()).batch_size(50)
+        return proxy_db.proxy_items_tmp.find({}, {'_id': 0}).batch_size(50)
+        
     @staticmethod
     def upsert_proxy_item(item):
         proxy_db.proxy_items_tmp.update({"ip": item['ip'], "port": item['port']}, item, True, True)

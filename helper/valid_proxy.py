@@ -19,7 +19,7 @@ import time
 #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36'
 # }
 
-sever_url = "http://123.206.6.251:8888/"
+sever_url = "http://www.baidu.com/"
 
 
 def valid_proxy(item):
@@ -44,8 +44,8 @@ def valid_get(proxies):
         response = requests.get(sever_url, proxies=proxies, allow_redirects=False, timeout=3)
         if response.status_code != 200:
             raise Exception("status code error")
-        if response.text.find(u"true") < 0:
-            raise Exception("not found true")
+        # if response.text.find(u"true") < 0:
+        #     raise Exception("not found true")
         logging.info("-----------------valid good---------------------")
         return True
     except Exception, e:
@@ -60,8 +60,8 @@ def valid_post(proxies):
         response = requests.post(sever_url, proxies=proxies, allow_redirects=False, timeout=3)
         if response.status_code != 200:
             raise Exception("status code error")
-        if response.text.find(u"true") < 0:
-            raise Exception("not found true")
+        # if response.text.find(u"true") < 0:
+        #     raise Exception("not found true")
         logging.info("-----------------valid good---------------------")
         return True
     except Exception, e:
