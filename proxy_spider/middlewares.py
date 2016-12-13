@@ -3,7 +3,7 @@ __author__ = 'Mr.Tian'
 
 import base64
 import random
-from proxy_spider.db.mongo import ProxyItemsTmpDB
+from proxy_spider.db.mongo import ProxyItemsTmpDB,ProxyItemsDB
 import logging
 from db.mredis import Redis
 from settings import REDIS_PROXY
@@ -30,51 +30,27 @@ class RandomUserAgentMiddleware(object):
 
     def process_request(self, request, spider):
         request.headers.setdefault('User-Agent', random.choice(self.agents))
+        logging.info("UA:%s"%request.headers['User-Agent'])
 
 
 class ProxyMiddleware(object):
     def __init__(self):
         self.proxylist = list()
-        for item in ProxyItemsTmpDB.get_proxy_items():  
+        for item in ProxyItemsDB.get_proxy_items():  
             self.proxylist.append(item)
         
 
     def process_request(self, request, spider):
-        if not Redis.get(REDIS_PROXY):
-            for item in ProxyItemsTmpDB.get_proxy_items():  
-                self.proxylist.append(item)
-            if self.proxylist:
-                if random.random() < 0.5:
-                    proxy = self.proxylist[0]
-                else:
-                    proxy = random.choice(self.proxylist)
-                Redis.psetex(REDIS_PROXY,1000*3600,json.dumps(proxy))
-
-        proxy = Redis.get(REDIS_PROXY)
-        if proxy:
-            proxy = json.loads(proxy)
-            http_proxy = "http://%s:%s" % (proxy["ip"], proxy["port"])
-            request.meta['proxy'] = http_proxy
+        if self.proxylist:
+            proxy = random.choice(self.proxylist)
+            logging.info(json.dumps(proxy)+"--------------using-------------------")
+            request.meta['proxy'] = "http://%s:%s" % (proxy["ip"], proxy["port"])
         
-    def process_response(self, request, response, spider):
-        if response.status == 200:
-            proxy = Redis.get(REDIS_PROXY)
-            proxy['time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            ProxyItemsTmpDB.upsert_proxy_item(dict(item))
+    # def process_response(self, request, response, spider):
+    #     pass
 
-    def process_exception(self, request, exception, spider):
-        proxy = Redis.get(REDIS_PROXY)
-        if proxy:
-            proxy = json.loads(proxy)
-            life = Redis.hget(spider.name,proxy['ip']+':'+proxy['port'])
-            if not life:
-                Redis.hset(spider.name,proxy['ip']+':'+proxy['port'],100)
-            else:
-                if int(life)>0:
-                    Redis.hset(spider.name,proxy['ip']+':'+proxy['port'],int(life)-1)
-                else:
-                    print 'dropping ',proxy
-                    Redis.psetex(REDIS_PROXY,1,'')
+    # def process_exception(self, request, exception, spider):
+    #     pass
         
         # mailer = MailSender()
         # mailer.send(to=["bangtech@sina.com"], subject="Some subject", body="Some body", cc=["bangtech@sina.com"])

@@ -55,10 +55,6 @@ class ProxyItemsTmpDB(object):
 
     @staticmethod
     def get_proxy_items():
-        hour_interval = [1,2,4,8,12,24,36,48,65535]
-        for i in hour_interval:
-            if proxy_db.proxy_items_tmp.count(get_mongo_find_dict(i)):
-                return proxy_db.proxy_items_tmp.find(get_mongo_find_dict()).batch_size(50)
         return proxy_db.proxy_items_tmp.find({}, {'_id': 0}).batch_size(50)
         
     @staticmethod

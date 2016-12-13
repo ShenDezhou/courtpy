@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-cd /home/apps/proxy.spider
+cd ~/courtpy
 python helper/crawl_proxy_api.py &
