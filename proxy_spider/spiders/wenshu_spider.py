@@ -22,22 +22,23 @@ class WenshuSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        if DEBUG:
-            for i in range(1, 4):
-                for j in range(1, 10):   # page
-                    url = "http://www.ip3366.net/free/?stype=%s&page=%s" % (i, j)
-                    yield scrapy.Request(url, self.parse)
-        else:
-            for i in range(1, 21):
-                formdata = {
-                    "Param":"法院层级:最高法院",
-                    "Index":i,
-                    "Page":20,
-                    "Order":"法院层级",
-                    "Direction":"asc"
-                    }
-                url = "http://wenshu.court.gov.cn/List/ListContent"
-                yield scrapy.FormRequest(url, formdata=formdata, callback=self.parse,meta={'param': formdata['Param']})
+        pass
+        # if DEBUG:
+        #     for i in range(1, 4):
+        #         for j in range(1, 10):   # page
+        #             url = "http://www.ip3366.net/free/?stype=%s&page=%s" % (i, j)
+        #             yield scrapy.Request(url, self.parse)
+        # else:
+        #     for i in range(1, 21):
+        #         formdata = {
+        #             "Param":"法院层级:最高法院",
+        #             "Index":i,
+        #             "Page":20,
+        #             "Order":"法院层级",
+        #             "Direction":"asc"
+        #             }
+        #         url = "http://wenshu.court.gov.cn/List/ListContent"
+        #         yield scrapy.FormRequest(url, formdata=formdata, callback=self.parse,meta={'param': formdata['Param']})
 
     def parse(self, response):
         print "parsing ",response.body

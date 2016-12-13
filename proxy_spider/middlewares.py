@@ -66,7 +66,7 @@ class ProxyMiddleware(object):
             proxy = json.loads(proxy)
             life = Redis.hget(spider.name,proxy['ip']+':'+proxy['port'])
             if not life:
-                Redis.hset(spider.name,proxy['ip']+':'+proxy['port'],100)
+                Redis.hset(spider.name,proxy['ip']+':'+proxy['port'],2)
             else:
                 if int(life)>0:
                     Redis.hset(spider.name,proxy['ip']+':'+proxy['port'],int(life)-1)

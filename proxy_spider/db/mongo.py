@@ -53,7 +53,7 @@ class ProxyItemsTmpDB(object):
 
     @staticmethod
     def get_proxy_items():
-        return proxy_db.proxy_items_tmp.find(GOOD_PROXY_CONDITION).batch_size(50)
+        return proxy_db.proxy_items_tmp.find(GOOD_PROXY_CONDITION).sort([("time",-1)]).batch_size(50)
 
     @staticmethod
     def upsert_proxy_item(item):
