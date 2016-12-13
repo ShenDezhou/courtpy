@@ -5,6 +5,7 @@ import logging
 
 import requests
 import time
+import json
 
 # default_header = {
 #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -18,20 +19,20 @@ import time
 #     'Upgrade-Insecure-Requests': '1',
 #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36'
 # }
-
-sever_url = "http://123.206.6.251:8888/"
+logging.basicConfig(level=logging.DEBUG)
+sever_url = "https://www.baidu.com/favicon.ico"
 
 
 def valid_proxy(item):
     proxies = {"http": "%s:%s" % (item["ip"], item["port"])}
-    logging.info(proxies)
+    logging.debug(proxies)
     ret = {"ip": item['ip'], "port": item['port']}
     if valid_get(proxies):
         ret.update({"get": True})
         pass
-    if valid_post(proxies):
-        ret.update({"post": True})
-        pass
+    # if valid_post(proxies):
+    #     ret.update({"post": True})
+    #     pass
     if ret.get("get") or ret.get("post"):
         return ret
     else:
@@ -39,17 +40,16 @@ def valid_proxy(item):
 
 
 def valid_get(proxies):
-    logging.info("valid get...")
+    # logging.info("valid get...")
     try:
         response = requests.get(sever_url, proxies=proxies, allow_redirects=False, timeout=3)
         if response.status_code != 200:
             raise Exception("status code error")
-        if response.text.find(u"true") < 0:
-            raise Exception("not found true")
-        logging.info("-----------------valid good---------------------")
+        logging.info(json.dumps(proxies)+"-----------------good--------------------")
         return True
     except Exception, e:
-        logging.info("-----------------valid bad---------------------%s" % e.message)
+        logging.info(json.dumps(proxies)+"-----------------bad---------------------")
+        logging.debug(e.message)
         return False
     pass
 
@@ -60,11 +60,10 @@ def valid_post(proxies):
         response = requests.post(sever_url, proxies=proxies, allow_redirects=False, timeout=3)
         if response.status_code != 200:
             raise Exception("status code error")
-        if response.text.find(u"true") < 0:
-            raise Exception("not found true")
-        logging.info("-----------------valid good---------------------")
+        logging.info(json.dumps(proxies)+"-----------------good--------------------")
         return True
     except Exception, e:
-        logging.info("-----------------valid bad---------------------%s" % e.message)
+        logging.info(json.dumps(proxies)+"-----------------bad---------------------")
+        logging.debug(e.message)
         return False
     pass

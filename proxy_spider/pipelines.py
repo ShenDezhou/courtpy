@@ -14,9 +14,6 @@ import dateutil.parser
 
 class ValidParamsPipeline(object):
     def process_item(self, item, spider):
-        if spider.name=="wenshu_spider":
-            return item
-        
         try:
             if item["ip"] and item["port"] and (0 < int(item['port']) < 65535):
                 return item
@@ -30,9 +27,6 @@ class DuplicatesPipeline(object):
         self.ips_seen = set()
 
     def process_item(self, item, spider):
-        if spider.name=="wenshu_spider":
-            return item
-        
         ip_port = '%s:%s' % (item['ip'], item['port'])
         if ip_port in self.ips_seen:
             raise DropItem("Duplicate item found: %s" % ip_port)
@@ -43,9 +37,6 @@ class DuplicatesPipeline(object):
 
 class TimeProcessPipeline(object):
     def process_item(self, item, spider):
-        if spider.name=="wenshu_spider":
-            return item
-        
         if item.get('time'):
             item['time'] = dateutil.parser.parse(item['time']).strftime('%Y-%m-%d %H:%M:%S')
         return item
@@ -53,17 +44,10 @@ class TimeProcessPipeline(object):
 
 class RedisPipeline(object):
     def process_item(self, item, spider):
-        if spider.name=="wenshu_spider":
-            return item
-        
         Redis.r.hset(spider.name,item['ip']+':'+item['port'],item)
         return item	
 
 class MongoPipeline(object):
     def process_item(self, item, spider):
-        if spider.name=="wenshu_spider":
-            WenshuItemsDB.upsert_proxy_item(dict(item))
-            return item
-        
         ProxyItemsTmpDB.upsert_proxy_item(dict(item))
         return item

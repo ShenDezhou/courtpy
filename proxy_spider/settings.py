@@ -83,14 +83,14 @@ COOKIES_ENABLED = False
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    #'proxy_spider.middlewares.DebugWenshuSpiderMiddleware': 543,
+    # 'proxy_spider.middlewares.DebugWenshuSpiderMiddleware': 543,
 }
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     # 'proxy_spider.middlewares.MyCustomDownloaderMiddleware': 543,
-    'proxy_spider.middlewares.ProxyMiddleware': 700,
+    # 'proxy_spider.middlewares.ProxyMiddleware': 700,
     'proxy_spider.middlewares.RandomUserAgentMiddleware': 410,
 }
 
@@ -145,17 +145,17 @@ RETRY_TIMES = 10
 #
 COMMANDS_MODULE = 'proxy_spider.commands'
 
-http_proxy = ''
+#http_proxy = 'http://111.7.162.28:83'
 # SPIDER NAME
 REDIS_SPIDER = '3366'
 REDIS_PROXY = 'PROXY'
 
 #email
-MAIL_FROM='bangtech@sina.com'
-MAIL_HOST='pop3.sina.com'
-MAIL_PORT=25
-MAIL_USER='bangtech@sina.com'
-MAIL_PASS='bangzikeji'
+# MAIL_FROM='bangtech@sina.com'
+# MAIL_HOST='pop3.sina.com'
+# MAIL_PORT=25
+# MAIL_USER='bangtech@sina.com'
+# MAIL_PASS='bangzikeji'
 # MAIL_TLS
 # 默认值: False
 # 强制使用STARTTLS。STARTTLS能使得在已经存在的不安全连接上，通过使用SSL/TLS来实现安全连接。
