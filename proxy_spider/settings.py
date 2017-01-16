@@ -36,7 +36,6 @@ USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
     "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
-
     "Mozilla/5.0 (windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/22.0.1207.1 Safari/537.1",
     "Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11",
     "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1092.0 Safari/536.6",
@@ -58,14 +57,14 @@ USER_AGENTS = [
 ]
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 2
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 32
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # CONCURRENT_REQUESTS_PER_IP=16
 
 # Disable cookies (enabled by default)
@@ -90,7 +89,8 @@ SPIDER_MIDDLEWARES = {
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     # 'proxy_spider.middlewares.MyCustomDownloaderMiddleware': 543,
-    # 'proxy_spider.middlewares.ProxyMiddleware': 700,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'scrapy_proxies.RandomProxy': 100,
     'proxy_spider.middlewares.RandomUserAgentMiddleware': 410,
 }
 
@@ -103,13 +103,22 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    # 'proxy_spider.pipelines.SomePipeline': 300,
     'proxy_spider.pipelines.ValidParamsPipeline': 100,
     'proxy_spider.pipelines.DuplicatesPipeline': 200,
-    'proxy_spider.pipelines.TimeProcessPipeline': 250,
+    # 'proxy_spider.pipelines.TimeProcessPipeline': 250,
     'proxy_spider.pipelines.RedisPipeline': 300,
-    'proxy_spider.pipelines.MongoPipeline': 400,
+    # 'proxy_spider.pipelines.MongoPipeline': 400,
 }
+
+PROXY_LIST = 'E:\courtpy\proxy_spider\proxy\sample.dat'
+# Proxy mode
+# 0 = Every requests have different proxy
+# 1 = Take only one proxy from the list and assign it to every requests
+# 2 = Put a custom proxy to use in the settings
+PROXY_MODE = 2
+
+# If proxy mode is 2 uncomment this sentence :
+CUSTOM_PROXY = "http://60.185.249.46:808"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -141,21 +150,21 @@ LOG_STDOUT = True
 
 # 重试次数
 RETRY_TIMES = 10
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
 
 #
 COMMANDS_MODULE = 'proxy_spider.commands'
 
 #http_proxy = 'http://111.7.162.28:83'
 # SPIDER NAME
-REDIS_SPIDER = '3366'
-REDIS_PROXY = 'PROXY'
+#REDIS_SPIDER = '3366'
+#REDIS_PROXY = 'PROXY'
 
 #email
 # MAIL_FROM='bangtech@sina.com'
 # MAIL_HOST='pop3.sina.com'
 # MAIL_PORT=25
-# MAIL_USER='bangtech@sina.com'
-# MAIL_PASS='bangzikeji'
 # MAIL_TLS
 # 默认值: False
 # 强制使用STARTTLS。STARTTLS能使得在已经存在的不安全连接上，通过使用SSL/TLS来实现安全连接。

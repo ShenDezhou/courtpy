@@ -35,19 +35,20 @@ class DuplicatesPipeline(object):
             return item
 
 
-class TimeProcessPipeline(object):
-    def process_item(self, item, spider):
-        if item.get('time'):
-            item['time'] = dateutil.parser.parse(item['time']).strftime('%Y-%m-%d %H:%M:%S')
-        return item
+# class TimeProcessPipeline(object):
+#     def process_item(self, item, spider):
+#         if item.get('time'):
+#             item['time'] = dateutil.parser.parse(item['time']).strftime('%Y-%m-%d %H:%M:%S')
+#         return item
 
 
 class RedisPipeline(object):
     def process_item(self, item, spider):
-        Redis.r.hset(spider.name,item['ip']+':'+item['port'],item)
+        print item
+        #Redis.r.hset(spider.name,item['ip']+':'+item['port'],item)
         return item	
 
-class MongoPipeline(object):
-    def process_item(self, item, spider):
-        ProxyItemsTmpDB.upsert_proxy_item(dict(item))
-        return item
+# class MongoPipeline(object):
+#     def process_item(self, item, spider):
+#         ProxyItemsTmpDB.upsert_proxy_item(dict(item))
+#         return item

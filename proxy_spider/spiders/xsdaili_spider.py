@@ -3,7 +3,7 @@ __author__ = 'Mr.Tian'
 
 import scrapy
 
-from ..items import ProxyItem
+from proxy_spider.items import ProxyItem
 
 
 class XsdailiSpider(scrapy.Spider):
@@ -11,11 +11,6 @@ class XsdailiSpider(scrapy.Spider):
     allowed_domains = [
         "xsdaili.com"
     ]
-
-    # start_urls = [
-    #     "http://ip84.com/dl"
-    # ]
-
     custom_settings = {
         'LOG_FILE': 'log/xsdaili.log'
     }
